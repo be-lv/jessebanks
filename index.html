@@ -30,7 +30,6 @@
             transition: background-color 0.3s;
         }
         .glow-card:hover {
-            /* Subtle shadow shift on hover, characteristic of iOS UI elements */
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15); 
             transform: translateY(-2px);
             transition: all 0.2s ease-out;
@@ -82,6 +81,8 @@
                             <a href="#" onclick="navigateTo('page-payments')" id="nav-page-payments" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Payments</a>
                             <a href="#" onclick="navigateTo('page-cards')" id="nav-page-cards" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Cards</a>
                             <a href="#" onclick="navigateTo('page-invest')" id="nav-page-invest" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Invest</a>
+                            <a href="#" onclick="navigateTo('page-loans')" id="nav-page-loans" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Loans</a>
+                            <a href="#" onclick="navigateTo('page-service')" id="nav-page-service" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Service</a>
                         </div>
                     </div>
                 </div>
@@ -93,12 +94,10 @@
                                 <i data-feather="bell"></i>
                                 <span class="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500"></span>
                             </button>
-                            <!-- User Profile Placeholder -->
-                            <div class="ml-3 relative">
-                                <button onclick="showNotification('Profile menu opened.')" class="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500" id="user-menu-button">
-                                    <img class="h-8 w-8 rounded-full" src="https://placehold.co/200x200/2563eb/ffffff?text=J" alt="User Avatar">
-                                </button>
-                            </div>
+                            <!-- User Profile Link -->
+                            <a href="#" onclick="navigateTo('page-profile')" class="ml-3 max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500">
+                                <img class="h-8 w-8 rounded-full" src="https://placehold.co/200x200/2563eb/ffffff?text=J" alt="User Avatar">
+                            </a>
                         </div>
                     </div>
                     <!-- Mobile Menu Button -->
@@ -119,6 +118,9 @@
                 <a href="#" onclick="navigateTo('page-payments')" id="nav-mobile-page-payments" class="nav-link block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Payments</a>
                 <a href="#" onclick="navigateTo('page-cards')" id="nav-mobile-page-cards" class="nav-link block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Cards</a>
                 <a href="#" onclick="navigateTo('page-invest')" id="nav-mobile-page-invest" class="nav-link block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Invest</a>
+                <a href="#" onclick="navigateTo('page-loans')" id="nav-mobile-page-loans" class="nav-link block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Loans</a>
+                <a href="#" onclick="navigateTo('page-service')" id="nav-mobile-page-service" class="nav-link block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Service</a>
+                <a href="#" onclick="navigateTo('page-profile')" id="nav-mobile-page-profile" class="nav-link block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Profile</a>
             </div>
             <div class="mt-4 pt-4 border-t border-gray-200">
                  <p class="text-xs text-gray-500">Your User ID (for sharing):</p>
@@ -180,7 +182,19 @@
     <!-- MAIN APPLICATION CONTENT -->
     <!-- ========================================================================= -->
     <div id="app-content" class="min-h-screen pt-20 pb-10 hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+            <!-- Mock Role Selector (Admin Login Simulation) -->
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-xl shadow-md flex justify-between items-center">
+                <div>
+                    <p class="font-bold">Current Role: <span id="current-role-display" class="capitalize">user</span></p>
+                    <p class="text-sm">Use this to simulate Admin login and unlock restricted panels.</p>
+                </div>
+                <select onchange="updateUserRole(this.value)" class="bg-white border border-yellow-500 text-yellow-800 rounded-lg p-2 text-sm focus:ring-yellow-500 focus:border-yellow-500">
+                    <option value="user">Standard User</option>
+                    <option value="cs_admin">CS Admin</option>
+                    <option value="admin">Universal Admin</option>
+                </select>
+            </div>
             <div class="mb-4 p-4 bg-white rounded-xl shadow-lg md:hidden">
                 <p class="text-xs text-gray-500">Your User ID (for sharing):</p>
                 <p id="user-id-desktop" class="text-sm font-mono text-blue-600 truncate"></p>
@@ -241,7 +255,7 @@
                     </div>
                 </div>
 
-                <!-- Right Column -->
+                <!-- Right Column (Kept for consistency) -->
                 <div class="w-full md:w-1/3 space-y-6">
                     
                     <!-- AI Financial Insights Card (Gemini Feature) -->
@@ -288,21 +302,8 @@
                         </button>
                     </div>
 
-                    <!-- Support Card -->
-                    <div class="bg-white rounded-xl p-6 shadow-xl">
-                        <div class="flex items-start">
-                            <div class="bg-blue-500/10 p-3 rounded-lg">
-                                <i data-feather="message-square" class="text-blue-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-xl font-semibold">Need help?</h3>
-                                <p class="text-gray-500 text-sm mt-1">Our support team is available 24/7 to assist you.</p>
-                                <button onclick="showNotification('Connecting to 24/7 support chat...')" class="mt-4 bg-gray-100 hover:bg-gray-200 text-blue-600 px-4 py-3 rounded-xl text-base font-medium transition-colors">
-                                    Start Chat
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Support Card (Removed to consolidate on Service Page) -->
+                    
                 </div>
             </div>
         </div>
@@ -579,6 +580,177 @@
                 </div>
             </div>
         </div>
+        
+        <!-- ========================================================================= -->
+        <!-- 6. LOANS PAGE (NEW) -->
+        <!-- ========================================================================= -->
+        <div id="page-loans" class="page-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <h1 class="text-3xl font-bold pt-4">Loan Management Center</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Loan Summary -->
+                <div class="md:col-span-1 bg-white rounded-xl shadow-xl p-6 space-y-4 border-l-4 border-red-500">
+                    <h2 class="text-xl font-semibold text-gray-800">Current Loan Balance</h2>
+                    <p class="text-4xl font-extrabold text-red-600">$18,500.00</p>
+                    <p class="text-gray-500 text-sm">Next Payment Due: <span class="font-semibold text-gray-700">July 1st ($450.00)</span></p>
+                    <button onclick="showNotification('Simulating making a loan payment...')" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-xl text-base font-medium transition-colors mt-4">
+                        Make a Payment
+                    </button>
+                </div>
+                
+                <!-- Loan Details -->
+                <div class="md:col-span-2 bg-white rounded-xl shadow-xl p-6">
+                    <h2 class="text-xl font-semibold mb-4">Active Loan Details (Auto Loan)</h2>
+                    <dl class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="border-b pb-2">
+                            <dt class="text-gray-500">Original Amount</dt>
+                            <dd class="font-medium text-gray-900">$25,000.00</dd>
+                        </div>
+                        <div class="border-b pb-2">
+                            <dt class="text-gray-500">Interest Rate (APR)</dt>
+                            <dd class="font-medium text-gray-900">4.99%</dd>
+                        </div>
+                        <div class="border-b pb-2">
+                            <dt class="text-gray-500">Term Remaining</dt>
+                            <dd class="font-medium text-gray-900">48 months</dd>
+                        </div>
+                        <div class="border-b pb-2">
+                            <dt class="text-gray-500">Last Payment Date</dt>
+                            <dd class="font-medium text-gray-900">June 1st, 2023</dd>
+                        </div>
+                    </dl>
+                    <button onclick="showNotification('Simulating refinance application...')" class="mt-6 w-full bg-gray-100 hover:bg-gray-200 text-blue-600 px-4 py-3 rounded-xl text-base font-medium transition-colors">
+                        Apply for New Loan / Refinance
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- 7. PROFILE PAGE (NEW) -->
+        <!-- ========================================================================= -->
+        <div id="page-profile" class="page-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+             <h1 class="text-3xl font-bold pt-4">User Profile & Settings</h1>
+             
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <!-- Profile Details -->
+                 <div class="md:col-span-2 bg-white rounded-xl shadow-xl p-6">
+                     <h2 class="text-xl font-semibold mb-6">Personal Information</h2>
+                     
+                     <div class="space-y-4 max-w-lg">
+                         <div>
+                             <label for="profile-name" class="block text-sm font-medium text-gray-700 mb-1">Preferred Name</label>
+                             <input type="text" id="profile-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" value="Jesse Banks">
+                         </div>
+                         <div>
+                             <label for="profile-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                             <input type="email" id="profile-email" disabled class="w-full p-3 border border-gray-100 bg-gray-50 rounded-lg text-gray-500" value="jesse.banks@example.com">
+                         </div>
+                         <div>
+                             <label for="profile-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                             <input type="text" id="profile-phone" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" value="(555) 123-4567">
+                         </div>
+                     </div>
+                     <button onclick="saveProfileChanges()" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors shadow-md">
+                         Save Changes
+                     </button>
+                 </div>
+                 
+                 <!-- Security/Access Sidebar -->
+                 <div class="md:col-span-1 bg-white rounded-xl shadow-xl p-6 space-y-6">
+                     <h3 class="text-xl font-semibold mb-4">Security & Access</h3>
+                     <div class="space-y-3">
+                         <button onclick="showNotification('Simulating password change flow...')" class="w-full text-left bg-gray-100 hover:bg-gray-200 p-3 rounded-xl transition-colors text-gray-700 flex items-center">
+                             <i data-feather="key" class="w-5 h-5 mr-3 text-blue-500"></i> Change Password
+                         </button>
+                         <button onclick="showNotification('Simulating 2FA setup...')" class="w-full text-left bg-gray-100 hover:bg-gray-200 p-3 rounded-xl transition-colors text-gray-700 flex items-center">
+                             <i data-feather="shield" class="w-5 h-5 mr-3 text-green-500"></i> Two-Factor Auth
+                         </button>
+                         <button onclick="showNotification('Logging out... (Mock)')" class="w-full text-left bg-red-100 hover:bg-red-200 p-3 rounded-xl transition-colors text-red-700 flex items-center">
+                             <i data-feather="log-out" class="w-5 h-5 mr-3 text-red-500"></i> Log Out
+                         </button>
+                     </div>
+                 </div>
+             </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- 8. CUSTOMER SERVICE PAGE (NEW) -->
+        <!-- ========================================================================= -->
+        <div id="page-service" class="page-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <h1 class="text-3xl font-bold pt-4">Customer Support & Admin Access</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Support Options -->
+                <div class="md:col-span-1 bg-white rounded-xl shadow-xl p-6 space-y-4">
+                    <h2 class="text-xl font-semibold">Contact Us</h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                            <i data-feather="message-square" class="text-blue-600"></i>
+                            <div>
+                                <p class="font-medium">Live Chat (24/7)</p>
+                                <p class="text-sm text-gray-500">Fastest response time.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <i data-feather="phone" class="text-gray-600"></i>
+                            <div>
+                                <p class="font-medium">Call Us: 1-800-JESSE-BANK</p>
+                                <p class="text-sm text-gray-500">Mon-Fri, 9am - 5pm EST</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <i data-feather="mail" class="text-gray-600"></i>
+                            <div>
+                                <p class="font-medium">Email Support</p>
+                                <p class="text-sm text-gray-500">Average 24-hour response.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gated Admin Panels -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- CS Admin Panel (Visible if role is cs_admin or admin) -->
+                    <div id="cs-admin-panel" class="bg-white rounded-xl shadow-xl p-6 border-l-4 border-green-500 hidden">
+                        <h2 class="text-xl font-bold text-green-700 flex items-center">
+                            <i data-feather="user-check" class="w-6 h-6 mr-2"></i> CS Admin Panel
+                        </h2>
+                        <p class="text-sm text-gray-600 mt-2">Access granted for Customer Service administrators.</p>
+                        <div class="mt-4 space-y-3">
+                             <button onclick="showNotification('CS Admin: Viewing ticket queue...')" class="w-full text-left bg-green-50 hover:bg-green-100 p-3 rounded-lg text-green-800 font-medium">
+                                View Open Support Tickets
+                             </button>
+                             <button onclick="showNotification('CS Admin: Initiating account review...')" class="w-full text-left bg-green-50 hover:bg-green-100 p-3 rounded-lg text-green-800 font-medium">
+                                Lookup Customer Account (Current User ID: ${userId})
+                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Universal Admin Panel (Visible only if role is admin) -->
+                    <div id="universal-admin-panel" class="bg-white rounded-xl shadow-xl p-6 border-l-4 border-red-500 hidden">
+                        <h2 class="text-xl font-bold text-red-700 flex items-center">
+                            <i data-feather="tool" class="w-6 h-6 mr-2"></i> Universal Admin Panel
+                        </h2>
+                        <p class="text-sm text-gray-600 mt-2">Full administrative access granted.</p>
+                        <div class="mt-4 space-y-3">
+                             <button onclick="showNotification('Universal Admin: Accessing system logs...')" class="w-full text-left bg-red-50 hover:bg-red-100 p-3 rounded-lg text-red-800 font-medium">
+                                System Audit Logs & Health Check
+                             </button>
+                             <button onclick="showNotification('Universal Admin: Modifying global configs...')" class="w-full text-left bg-red-50 hover:bg-red-100 p-3 rounded-lg text-red-800 font-medium">
+                                Modify Global Interest Rates
+                             </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Default message when not authenticated as admin -->
+                    <div id="service-default-message" class="bg-white rounded-xl shadow-xl p-6 text-center text-gray-500">
+                        <i data-feather="lock" class="w-8 h-8 mx-auto mb-3"></i>
+                        <p>No Admin access detected. Log in as an administrator to view special tools.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Firebase and Application Logic -->
@@ -597,14 +769,16 @@
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let db, auth, userId = 'loading';
-        let isOnboarded = false; // New state variable
+        let isOnboarded = false; 
+        let userRole = 'user'; // Initialize user role
+
         // Global variables to hold the latest data for the Gemini API call
         let latestProfileData = {}; 
         let latestTransactions = [];
         let latestAccounts = []; 
 
         // --- SPA Navigation Logic ---
-        const pageIds = ['page-dashboard', 'page-accounts', 'page-payments', 'page-cards', 'page-invest'];
+        const pageIds = ['page-dashboard', 'page-accounts', 'page-payments', 'page-cards', 'page-invest', 'page-loans', 'page-profile', 'page-service'];
         
         const closeMobileMenu = () => {
             const menu = document.getElementById('mobile-menu');
@@ -761,60 +935,24 @@
         const ACCOUNTS_COLLECTION = 'accounts';
         const TRANSACTIONS_COLLECTION = 'transactions';
 
-        // Updated initial data to include onboarding flag
+        // Updated initial data to include role and onboarding flag
         const initialUserData = {
-            name: 'User', // Default name
+            name: 'Jesse Banks', // Default name
+            email: 'jesse.banks@example.com',
+            phone: '(555) 123-4567',
             totalBalance: 42589.23,
             creditScore: 785,
             creditScoreDate: '2023-06-01',
-            isOnboarded: false, // NEW FLAG
+            role: 'user', // Default role
+            isOnboarded: false, 
             lastUpdated: new Date().toISOString()
         };
 
         const initialAccounts = [
-            {
-                id: 'checking',
-                name: 'Checking',
-                balance: 8742.36,
-                number: '4567',
-                color: 'blue-600',
-                icon: 'credit-card',
-                type: 'standard',
-                buttonText: 'View Transactions'
-            },
-            {
-                id: 'credit',
-                name: 'Credit Card',
-                balance: 2456.78,
-                number: '1892',
-                color: 'red-500', 
-                icon: 'dollar-sign',
-                type: 'credit',
-                limit: 7000.00,
-                buttonText: 'Pay Balance'
-            },
-            {
-                id: 'savings',
-                name: 'Savings',
-                balance: 31390.09,
-                number: '9012',
-                color: 'blue-600',
-                icon: 'pocket',
-                type: 'standard',
-                apy: '3.40% APY',
-                buttonText: ['Deposit', 'Withdraw']
-            },
-            {
-                id: 'investments',
-                name: 'Investments',
-                balance: 12450.80,
-                number: '3456',
-                color: 'blue-600',
-                icon: 'trending-up',
-                type: 'investment',
-                todayChange: 245.60,
-                buttonText: 'Manage Portfolio'
-            }
+            { id: 'checking', name: 'Checking', balance: 8742.36, number: '4567', icon: 'credit-card', type: 'standard' },
+            { id: 'credit', name: 'Credit Card', balance: 2456.78, number: '1892', icon: 'dollar-sign', type: 'credit', limit: 7000.00 },
+            { id: 'savings', name: 'Savings', balance: 31390.09, number: '9012', icon: 'pocket', type: 'standard', apy: '3.40% APY' },
+            { id: 'investments', name: 'Investments', balance: 12450.80, number: '3456', icon: 'trending-up', type: 'investment', todayChange: 245.60 }
         ];
 
         const initialTransactions = [
@@ -849,17 +987,18 @@
                     const transactionsCollectionRef = getCollectionRef(TRANSACTIONS_COLLECTION);
                     const transactionBatch = writeBatch(db);
                     initialTransactions.forEach(tx => {
+                        // Use unique ID for transactions, not hardcoded index
                         const transactionRef = doc(transactionsCollectionRef, crypto.randomUUID());
                         transactionBatch.set(transactionRef, tx);
                     });
                     await transactionBatch.commit();
                     
-                    return initialUserData; // Return initial data if setting up for the first time
+                    return initialUserData; 
                 }
-                return docSnap.data(); // Return existing data
+                return docSnap.data(); 
             } catch (error) {
                 console.error("Error setting up initial data:", error);
-                return { isOnboarded: false }; // Fallback
+                return { isOnboarded: false, role: 'user' }; 
             }
         };
 
@@ -913,8 +1052,11 @@
              const onboardingContainer = document.getElementById('onboarding-container');
              const appContent = document.getElementById('app-content');
              
-             if (userData.isOnboarded) {
-                 isOnboarded = true;
+             // Update global state
+             isOnboarded = !!userData.isOnboarded;
+             userRole = userData.role || 'user'; // Ensure role is set from data
+
+             if (isOnboarded) {
                  onboardingContainer.classList.add('hidden');
                  appContent.classList.remove('hidden');
                  // Start listening to data and navigate to the default page
@@ -922,7 +1064,6 @@
                  const defaultPage = window.location.hash.substring(1) || 'page-dashboard';
                  navigateTo(defaultPage);
              } else {
-                 isOnboarded = false;
                  onboardingContainer.classList.remove('hidden');
                  appContent.classList.add('hidden');
                  // Start the onboarding process
@@ -931,7 +1072,6 @@
         };
 
         const startOnboarding = () => {
-             // Initialize to Step 1
              handleOnboardingStep(1);
              feather.replace();
         };
@@ -941,11 +1081,9 @@
              const nameInput = document.getElementById('onboarding-name-input');
              const nameDisplay = document.getElementById('onboarding-name-display');
 
-             // Handle previous step data collection/validation
              if (step === 3) {
                  const newName = nameInput.value.trim() || 'User';
                  nameDisplay.textContent = newName;
-                 // Store the temporary name until completion
                  latestProfileData.name = newName; 
              }
 
@@ -956,15 +1094,13 @@
                  
                  if (stepEl && progressEl) {
                      if (s === step) {
-                         // Show current step
                          stepEl.classList.remove('hidden', 'opacity-0');
                          stepEl.classList.add('opacity-100');
                          progressEl.classList.add('bg-blue-600');
                      } else {
-                         // Hide other steps
                          stepEl.classList.remove('opacity-100');
                          stepEl.classList.add('hidden', 'opacity-0');
-                         progressEl.classList.toggle('bg-blue-600', s < step); // Fill completed steps
+                         progressEl.classList.toggle('bg-blue-600', s < step); 
                      }
                  }
              });
@@ -980,7 +1116,6 @@
                  // Update profile with the new name and set onboarding to true
                  await setDoc(profileRef, { name: name, isOnboarded: true }, { merge: true });
                  
-                 // UI Transition
                  const onboardingContainer = document.getElementById('onboarding-container');
                  const appContent = document.getElementById('app-content');
 
@@ -1001,6 +1136,58 @@
         // Expose globally for HTML
         window.completeOnboarding = completeOnboarding;
 
+        // --- ROLE MANAGEMENT LOGIC ---
+
+        const updateUserRole = async (newRole) => {
+             if (!db || !userId) {
+                 showNotification('System not ready. Please wait for authentication.');
+                 return;
+             }
+             const profileRef = getDocumentRef(PROFILE_COLLECTION, PROFILE_DOC_ID);
+             try {
+                 await setDoc(profileRef, { role: newRole }, { merge: true });
+                 showNotification(`Role updated to ${newRole.toUpperCase()}. UI access changed.`);
+             } catch (error) {
+                 console.error("Failed to update role:", error);
+                 showNotification('Error changing role in Firestore.');
+             }
+        };
+        window.updateUserRole = updateUserRole;
+
+
+        const checkAdminUI = (role) => {
+            const csAdminPanel = document.getElementById('cs-admin-panel');
+            const universalAdminPanel = document.getElementById('universal-admin-panel');
+            const defaultMessage = document.getElementById('service-default-message');
+            const roleDisplay = document.getElementById('current-role-display');
+
+            roleDisplay.textContent = role;
+
+            // CS Admin access (cs_admin or admin)
+            if (role === 'cs_admin' || role === 'admin') {
+                csAdminPanel.classList.remove('hidden');
+            } else {
+                csAdminPanel.classList.add('hidden');
+            }
+
+            // Universal Admin access (only admin)
+            if (role === 'admin') {
+                universalAdminPanel.classList.remove('hidden');
+            } else {
+                universalAdminPanel.classList.add('hidden');
+            }
+            
+            // Default message visibility
+            if (role === 'user') {
+                 defaultMessage.classList.remove('hidden');
+            } else {
+                 defaultMessage.classList.add('hidden');
+            }
+            
+            feather.replace();
+        };
+
+
         // --- DATA LISTENERS AND RENDERING ---
 
         const setupDataListeners = () => {
@@ -1010,7 +1197,9 @@
                 if (docSnapshot.exists()) {
                     const data = docSnapshot.data();
                     latestProfileData = data;
+                    userRole = data.role || 'user'; // Update role state
                     renderProfile(data);
+                    checkAdminUI(userRole); // Rerender admin panels based on new role
                 }
             }, (error) => console.error("Error listening to profile:", error));
 
@@ -1056,7 +1245,8 @@
         const updateTotalBalance = async (newTotal) => {
              const profileRef = getDocumentRef(PROFILE_COLLECTION, PROFILE_DOC_ID);
              try {
-                if (latestProfileData.totalBalance !== newTotal) {
+                // Only update Firestore if the balance has changed significantly to avoid excessive writes
+                if (Math.abs(latestProfileData.totalBalance - newTotal) > 0.01) {
                      await setDoc(profileRef, { totalBalance: newTotal }, { merge: true });
                 }
              } catch (e) {
@@ -1067,6 +1257,15 @@
         const renderProfile = (data) => {
             document.getElementById('user-name-display').textContent = data.name || 'User';
             document.getElementById('total-balance-display').textContent = formatCurrency(data.totalBalance);
+
+            // Profile Page Inputs
+            const profileNameInput = document.getElementById('profile-name');
+            const profileEmailInput = document.getElementById('profile-email');
+            const profilePhoneInput = document.getElementById('profile-phone');
+
+            if (profileNameInput) profileNameInput.value = data.name || '';
+            if (profileEmailInput) profileEmailInput.value = data.email || '';
+            if (profilePhoneInput) profilePhoneInput.value = data.phone || '';
 
             // Credit Score Update
             document.getElementById('credit-score-display').textContent = data.creditScore;
@@ -1082,19 +1281,36 @@
             if(scoreArcEl) scoreArcEl.style.strokeDashoffset = offset.toFixed(2);
         };
         
-        // --- Rendering Functions for different pages (omitted for brevity, assume they remain correct) ---
+        window.saveProfileChanges = async () => {
+             const profileName = document.getElementById('profile-name').value;
+             const profilePhone = document.getElementById('profile-phone').value;
+             
+             if (!profileName.trim()) {
+                 showNotification('Name cannot be empty.');
+                 return;
+             }
+             
+             const profileRef = getDocumentRef(PROFILE_COLLECTION, PROFILE_DOC_ID);
+             try {
+                 await setDoc(profileRef, { name: profileName, phone: profilePhone }, { merge: true });
+                 showNotification('Profile information saved successfully!');
+             } catch (error) {
+                 console.error('Error saving profile:', error);
+                 showNotification('Failed to save profile changes.');
+             }
+        };
+
+        // --- Rendering Functions (Abbreviated to focus on new logic) ---
 
         const renderAccountsDashboard = (accounts) => {
             const container = document.getElementById('accounts-container-dashboard');
-            // Show only the first 2 accounts for the dashboard quick view
             container.innerHTML = accounts.slice(0, 2).map(account => {
-                let innerHTML = '';
                 const isCredit = account.type === 'credit';
                 const balanceText = isCredit ? 'Current Balance' : 'Available Balance';
                 const balanceDisplay = isCredit ? formatCurrency(account.balance) : formatCurrency(account.balance);
                 const balanceColor = isCredit ? 'text-red-600' : 'text-blue-600';
                 
-                innerHTML = `
+                return `
                     <div class="bg-white rounded-xl p-6 shadow-xl glow-card">
                         <div class="flex justify-between items-start">
                             <div>
@@ -1110,7 +1326,6 @@
                         </button>
                     </div>
                 `;
-                return innerHTML;
             }).join('');
 
             feather.replace();
@@ -1240,19 +1455,23 @@
             const amount = document.getElementById('amount').value;
             const fromAccount = document.getElementById('from-account').value;
             const toRecipient = document.getElementById('to-recipient').value;
-            const memo = document.getElementById('memo').value;
-
-            if (parseFloat(amount) <= 0 || !fromAccount || !toRecipient) {
-                showNotification('Please fill out all required fields with valid data.');
-                return;
+            // Mock account update
+            const accountToUpdate = latestAccounts.find(acc => acc.id === fromAccount);
+            if (accountToUpdate && parseFloat(amount) > 0) {
+                 const newBalance = accountToUpdate.balance - parseFloat(amount);
+                 const accountRef = getDocumentRef(ACCOUNTS_COLLECTION, fromAccount);
+                 setDoc(accountRef, { balance: newBalance }, { merge: true })
+                    .then(() => showNotification(`Transfer of ${formatCurrency(amount)} from ${fromAccount} to ${toRecipient} submitted! (Balance Updated)`))
+                    .catch(e => console.error("Error updating account balance:", e));
+            } else {
+                 showNotification(`Transfer of ${formatCurrency(amount)} from ${fromAccount} to ${toRecipient} submitted! (Mock Transaction)`);
             }
 
-            showNotification(`Transfer of ${formatCurrency(amount)} from ${fromAccount} to ${toRecipient} submitted! (Mock Transaction)`);
             form.reset(); // Clear the form
         };
 
 
-        // --- GEMINI API INTEGRATION ---
+        // --- GEMINI API INTEGRATION (Unchanged from previous version) ---
         const GEMINI_MODEL = 'gemini-2.5-flash-preview-05-20';
         const API_KEY = "";
 
@@ -1379,3 +1598,4 @@
     </script>
 </body>
 </html>
+
