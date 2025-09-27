@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jesse banks Dashboard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Feather Icons for aesthetics -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        // Tailwind Configuration - Using the clean blue primary color for the iOS aesthetic
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Using native Tailwind colors for a clean look
+                        'primary-blue': {
+                            500: '#3b82f6', // blue-500
+                            600: '#2563eb', // blue-600
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        html {
+            /* Enable smooth scrolling across the page */
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s;
+        }
+        .glow-card:hover {
+            /* Subtle shadow shift on hover, characteristic of iOS UI elements */
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15); 
+            transform: translateY(-2px);
+            transition: all 0.2s ease-out;
+        }
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        /* Mobile menu overlay */
+        .mobile-menu {
+            transition: transform 0.3s ease-out;
+        }
+        .hidden-mobile {
+            transform: translateX(-100%);
+        }
+        /* Offset anchors for fixed header */
+        .section-anchor {
+            padding-top: 4rem; /* Height of the fixed header (h-16 or 4rem) */
+            margin-top: -4rem; 
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <!-- Notification Container (New addition for button functionality) -->
+    <div id="notification-container" class="fixed bottom-4 right-4 z-50 pointer-events-none max-w-xs w-full">
+        <!-- Notification Toast will be inserted here -->
+    </div>
+    
+    <!-- Navigation (Fixed to the top) -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full z-20 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 text-blue-600 font-bold text-xl">
+                        jesse banks
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-2">
+                            <!-- Updated hrefs for desktop navigation -->
+                            <a href="#dashboard-main" class="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600">Dashboard</a>
+                            <a href="#accounts-section" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Accounts</a>
+                            <a href="#quick-actions" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Payments</a>
+                            <a href="#credit-score-section" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Cards</a>
+                            <a href="#ai-insights-section" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Invest</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="hidden md:block">
+                        <div class="ml-4 flex items-center md:ml-6">
+                            <!-- Notification Button -->
+                            <button onclick="showNotification('2 new alerts: Budget exceeded and card expired.')" class="p-2 rounded-full text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500 relative">
+                                <i data-feather="bell"></i>
+                                <span class="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500"></span>
+                            </button>
+                            <!-- User Profile Placeholder -->
+                            <div class="ml-3 relative">
+                                <button onclick="showNotification('Profile menu opened.')" class="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500" id="user-menu-button">
+                                    <img class="h-8 w-8 rounded-full" src="https://placehold.co/200x200/2563eb/ffffff?text=J" alt="User Avatar">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Mobile Menu Button -->
+                    <div class="-mr-2 flex md:hidden">
+                        <button id="mobile-menu-open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500">
+                            <i data-feather="menu"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="mobile-menu hidden-mobile fixed top-16 left-0 w-full bg-white md:hidden z-10 p-4 border-t border-gray-200">
+            <div class="space-y-1">
+                <!-- Updated hrefs for mobile navigation -->
+                <a href="#dashboard-main" class="block px-3 py-2 rounded-lg text-base font-semibold text-white bg-blue-600">Dashboard</a>
+                <a href="#accounts-section" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Accounts</a>
+                <a href="#quick-actions" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Payments</a>
+                <a href="#credit-score-section" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Cards</a>
+                <a href="#ai-insights-section" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-100">Invest</a>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                 <p class="text-xs text-gray-500">Your User ID (for sharing):</p>
+                 <p id="user-id-mobile" class="text-sm font-mono text-blue-600 truncate mt-1"></p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper (Target for Dashboard link) -->
+    <main class="pt-20 pb-10" id="dashboard-main">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-4 p-4 bg-white rounded-xl shadow-lg md:hidden">
+                <p class="text-xs text-gray-500">Your User ID (for sharing):</p>
+                <p id="user-id-desktop" class="text-sm font-mono text-blue-600 truncate"></p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Left Column (Target for Accounts link) -->
+                <div class="w-full md:w-2/3 space-y-6" id="accounts-section">
+                    <span class="section-anchor"></span>
+                    <!-- Welcome Banner -->
+                    <div class="bg-white rounded-xl p-6 border-l-4 border-blue-500 shadow-xl">
+                        <h2 class="text-xl font-bold text-gray-900">Welcome back, <span id="user-name-display">...</span>!</h2>
+                        <p class="text-gray-500 mt-2">Here's what's happening with your accounts today.</p>
+                    </div>
+
+                    <!-- Total Balance Card -->
+                    <div class="bg-white rounded-xl p-6 shadow-xl glow-card">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500">Total Balance</p>
+                                <h3 id="total-balance-display" class="text-4xl font-extrabold text-blue-600 mt-1">$0.00</h3>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button onclick="showNotification('Starting transfer process...')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-base font-medium shadow-md transition-colors">
+                                    Transfer
+                                </button>
+                                <button onclick="showNotification('Launching payment interface...')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-5 py-3 rounded-xl text-base font-medium transition-colors">
+                                    Pay
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Cards Container -->
+                    <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Account cards will be dynamically inserted here -->
+                        <div class="bg-white rounded-xl p-6 shadow-md text-center text-gray-500 animate-pulse">Loading accounts...</div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="bg-white rounded-xl p-6 shadow-xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-semibold">Recent Transactions</h3>
+                            <button onclick="showNotification('Loading all transaction history...')" class="text-blue-600 text-sm font-medium hover:text-blue-500 transition-colors">
+                                View All
+                            </button>
+                        </div>
+                        <div id="transactions-container" class="space-y-4">
+                             <!-- Transaction list will be dynamically inserted here -->
+                             <div class="flex justify-center items-center h-20 text-gray-500 animate-pulse">
+                                 Loading transactions...
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="w-full md:w-1/3 space-y-6">
+                    
+                    <!-- AI Financial Insights Card (Gemini Feature) (Target for Invest link) -->
+                    <div class="bg-white rounded-xl p-6 shadow-xl" id="ai-insights-section">
+                        <span class="section-anchor"></span>
+                        <h3 class="text-xl font-semibold mb-4">AI Financial Insights ✨</h3>
+                        <textarea id="insight-context-input" class="w-full h-20 p-3 bg-gray-100 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 border-none resize-none" placeholder="Ask for specific analysis, e.g., 'Am I saving enough for retirement?' (Optional)"></textarea>
+                        <button id="generate-insight-btn" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl text-base font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md">
+                            <span id="insight-btn-text">Generate Insight ✨</span>
+                            <svg id="insight-loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                        
+                        <div id="insight-result-container" class="mt-6 p-4 bg-blue-50 rounded-xl hidden">
+                            <h4 class="text-sm font-semibold mb-2 text-blue-600">Personalized Insight:</h4>
+                            <p id="insight-result" class="text-gray-800 text-sm italic"></p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions (Target for Payments link) -->
+                    <div class="bg-white rounded-xl p-6 shadow-xl" id="quick-actions">
+                        <span class="section-anchor"></span>
+                        <h3 class="text-xl font-semibold mb-6">Quick Actions</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="showNotification('Initiating quick Send Money feature...')" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-xl flex flex-col items-center transition-colors">
+                                <i data-feather="send" class="text-blue-500 mb-2"></i>
+                                <span class="text-sm text-gray-700">Send Money</span>
+                            </button>
+                            <button onclick="showNotification('Requesting funds via P2P...')" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-xl flex flex-col items-center transition-colors">
+                                <i data-feather="dollar-sign" class="text-blue-500 mb-2"></i>
+                                <span class="text-sm text-gray-700">Request</span>
+                            </button>
+                            <button onclick="showNotification('Accessing bill payment system...')" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-xl flex flex-col items-center transition-colors">
+                                <i data-feather="credit-card" class="text-blue-500 mb-2"></i>
+                                <span class="text-sm text-gray-700">Pay Bill</span>
+                            </button>
+                            <button onclick="showNotification('Starting account top-up process...')" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-xl flex flex-col items-center transition-colors">
+                                <i data-feather="plus" class="text-blue-500 mb-2"></i>
+                                <span class="text-sm text-gray-700">Top Up</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Financial Tools (Credit Score) (Target for Cards link) -->
+                    <div class="bg-white rounded-xl p-6 shadow-xl" id="credit-score-section">
+                        <span class="section-anchor"></span>
+                        <h3 class="text-xl font-semibold mb-4">Credit Score</h3>
+                        <div class="flex justify-center">
+                            <div class="relative w-40 h-40">
+                                <svg class="w-full h-full" viewBox="0 0 100 100">
+                                    <!-- Background circle -->
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" stroke-width="8"></circle>
+                                    <!-- Progress circle -->
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round"
+                                        stroke-dasharray="283" id="credit-score-arc" stroke-dashoffset="33.84"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span id="credit-score-display" class="text-2xl font-bold text-blue-600">785</span>
+                                    <span id="credit-score-status" class="text-xs text-gray-500">Excellent</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center text-sm text-gray-500">
+                            Updated: <span id="credit-score-date">June 1, 2023</span>
+                        </div>
+                        <button onclick="showNotification('Displaying detailed credit report...')" class="mt-6 w-full bg-gray-100 hover:bg-gray-200 text-blue-600 px-4 py-3 rounded-xl text-base font-medium transition-colors">
+                            View Details
+                        </button>
+                    </div>
+
+                    <!-- Support Card -->
+                    <div class="bg-white rounded-xl p-6 shadow-xl">
+                        <div class="flex items-start">
+                            <div class="bg-blue-500/10 p-3 rounded-lg">
+                                <i data-feather="message-square" class="text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-semibold">Need help?</h3>
+                                <p class="text-gray-500 text-sm mt-1">Our support team is available 24/7 to assist you.</p>
+                                <button onclick="showNotification('Connecting to 24/7 support chat...')" class="mt-4 bg-gray-100 hover:bg-gray-200 text-blue-600 px-4 py-3 rounded-xl text-base font-medium transition-colors">
+                                    Start Chat
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase and Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, writeBatch, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Use Debug logging for development
+        setLogLevel('Debug');
+
+        // --- Global Variables provided by the environment (MANDATORY) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId = 'loading';
+        // Global variables to hold the latest data for the Gemini API call
+        let latestProfileData = {}; 
+        let latestTransactions = [];
+
+        // --- Notification System (NEW) ---
+        const showNotification = (message) => {
+            const container = document.getElementById('notification-container');
+            if (!container) return; // Safety check
+
+            const toast = document.createElement('div');
+            toast.className = 'bg-gray-800 text-white px-6 py-3 rounded-xl shadow-xl mb-3 text-sm transition-all duration-300 transform opacity-0 translate-y-2 pointer-events-auto';
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            // Show the toast
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+                toast.classList.add('opacity-100', 'translate-y-0');
+            }, 10);
+
+            // Hide and remove the toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    if (container.contains(toast)) {
+                        container.removeChild(toast);
+                    }
+                }, 300); // Wait for transition to finish
+            }, 3000);
+        };
+
+
+        // --- Firestore Path Helpers (FIXED) ---
+
+        // Base path for user-specific collections: artifacts/{appId}/users/{userId}/{collectionName} (5 segments - ODD)
+        const getCollectionRef = (collectionName) => {
+            return collection(db, `artifacts/${appId}/users/${userId}/${collectionName}`);
+        };
+
+        // Path for a specific document: artifacts/{appId}/users/{userId}/{collectionName}/{documentId} (6 segments - EVEN)
+        const getDocumentRef = (collectionName, documentId) => {
+            return doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, documentId);
+        };
+
+        // Helper to format currency
+        const formatCurrency = (amount) => {
+            const num = parseFloat(amount);
+            if (isNaN(num)) return '$0.00';
+            return num.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+
+        // --- INITIALIZATION AND AUTHENTICATION ---
+        const initFirebase = async () => {
+            if (!firebaseConfig) {
+                console.error("Firebase config is missing.");
+                document.getElementById('user-name-display').textContent = 'Error';
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Sign in using custom token or anonymously
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Wait for auth state to be ready
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Authenticated user ID:", userId);
+                        
+                        // Update UI with user ID
+                        const userIdElements = ['user-id-desktop', 'user-id-mobile'];
+                        userIdElements.forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) el.textContent = userId;
+                        });
+
+                        // Start setting up data listeners and initial data
+                        setupUserData();
+                        setupDataListeners();
+                    } else {
+                        console.log("No user is signed in.");
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization or authentication failed:", error);
+                document.getElementById('user-name-display').textContent = 'Auth Error';
+            }
+        };
+
+        // --- DATA STRUCTURE & INITIALIZATION ---
+
+        // We will store the user's profile in a document called 'data' within the 'profile' collection
+        const PROFILE_COLLECTION = 'profile';
+        const PROFILE_DOC_ID = 'dashboard_data';
+        const ACCOUNTS_COLLECTION = 'accounts';
+        const TRANSACTIONS_COLLECTION = 'transactions';
+
+        const initialUserData = {
+            name: 'Jesse',
+            totalBalance: 42589.23,
+            creditScore: 785,
+            creditScoreDate: '2023-06-01',
+            lastUpdated: new Date().toISOString()
+        };
+
+        const initialAccounts = [
+            {
+                id: 'checking',
+                name: 'Checking',
+                balance: 8742.36,
+                number: '4567',
+                color: 'blue-600',
+                icon: 'credit-card',
+                type: 'standard',
+                buttonText: 'View Transactions'
+            },
+            {
+                id: 'credit',
+                name: 'Credit Card',
+                balance: 2456.78,
+                number: '1892',
+                color: 'red-500', // Use red for debt/credit card
+                icon: 'dollar-sign',
+                type: 'credit',
+                limit: 7000.00,
+                buttonText: 'Pay Balance'
+            },
+            {
+                id: 'savings',
+                name: 'Savings',
+                balance: 31390.09,
+                number: '9012',
+                color: 'blue-600',
+                icon: 'pocket',
+                type: 'standard',
+                apy: '3.40% APY',
+                buttonText: ['Deposit', 'Withdraw']
+            },
+            {
+                id: 'investments',
+                name: 'Investments',
+                balance: 12450.80,
+                number: '3456',
+                color: 'blue-600',
+                icon: 'trending-up',
+                type: 'investment',
+                todayChange: 245.60,
+                buttonText: 'Manage Portfolio'
+            }
+        ];
+
+        const initialTransactions = [
+            { id: 1, merchant: 'Amazon', date: 'June 12', category: 'Shopping', amount: -89.99, icon: 'shopping-bag' },
+            { id: 2, merchant: 'Deposit', date: 'June 10', category: 'Salary', amount: 3500.00, icon: 'dollar-sign' },
+            { id: 3, merchant: 'Starbucks', date: 'June 9', category: 'Food & Drink', amount: -5.75, icon: 'coffee' },
+            { id: 4, merchant: 'Netflix', date: 'June 5', category: 'Subscription', amount: -14.99, icon: 'wifi' }
+        ];
+
+        const setupUserData = async () => {
+            const profileRef = getDocumentRef(PROFILE_COLLECTION, PROFILE_DOC_ID);
+
+            try {
+                const docSnap = await getDoc(profileRef);
+
+                if (!docSnap.exists()) {
+                    console.log("Setting up initial user data...");
+                    // 1. Set User Profile
+                    await setDoc(profileRef, initialUserData);
+
+                    // 2. Set Accounts
+                    const batch = writeBatch(db);
+                    initialAccounts.forEach(account => {
+                        const accountRef = getDocumentRef(ACCOUNTS_COLLECTION, account.id);
+                        batch.set(accountRef, account);
+                    });
+                    await batch.commit();
+
+                    // 3. Set Transactions
+                    const transactionsCollectionRef = getCollectionRef(TRANSACTIONS_COLLECTION);
+                    const transactionBatch = writeBatch(db);
+                    initialTransactions.forEach(tx => {
+                        // Use a unique ID for the Firestore document
+                        const transactionRef = doc(transactionsCollectionRef, crypto.randomUUID());
+                        transactionBatch.set(transactionRef, tx);
+                    });
+                    await transactionBatch.commit();
+                }
+            } catch (error) {
+                console.error("Error setting up initial data:", error);
+            }
+        };
+
+        // --- DATA LISTENERS AND RENDERING ---
+
+        const setupDataListeners = () => {
+            // 1. Listen for Profile Data
+            const profileRef = getDocumentRef(PROFILE_COLLECTION, PROFILE_DOC_ID);
+            onSnapshot(profileRef, (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                    const data = docSnapshot.data();
+                    latestProfileData = data; // Store the latest data for Gemini API
+                    renderProfile(data);
+                }
+            }, (error) => console.error("Error listening to profile:", error));
+
+            // 2. Listen for Accounts Data
+            const accountsQuery = getCollectionRef(ACCOUNTS_COLLECTION);
+            onSnapshot(accountsQuery, (querySnapshot) => {
+                const accounts = [];
+                let totalBalance = 0;
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    accounts.push(data);
+                    // Only sum checking, savings, and investment for total balance
+                    if (data.id !== 'credit') {
+                         totalBalance += data.balance;
+                    }
+                });
+
+                // Update total balance in the profile document
+                updateTotalBalance(totalBalance);
+                renderAccounts(accounts);
+
+            }, (error) => console.error("Error listening to accounts:", error));
+
+
+            // 3. Listen for Transactions Data
+            const transactionsQuery = query(getCollectionRef(TRANSACTIONS_COLLECTION));
+            onSnapshot(transactionsQuery, (querySnapshot) => {
+                const transactions = [];
+                querySnapshot.forEach((doc) => {
+                    transactions.push(doc.data());
+                });
+                // Sort transactions in memory by date (simple string comparison for mock data)
+                transactions.sort((a, b) => {
+                    // Simple sorting logic based on date string (for mock data 'June 12', 'June 10')
+                    // A proper implementation would use timestamp fields for reliable sorting.
+                    if (a.date > b.date) return -1;
+                    if (a.date < b.date) return 1;
+                    return 0;
+                });
+                latestTransactions = transactions; // Store the latest data for Gemini API
+                renderTransactions(transactions);
+            }, (error) => console.error("Error listening to transactions:", error));
+        };
+
+        const updateTotalBalance = async (newTotal) => {
+             // This function is run inside the accounts listener to keep the total balance updated
+             const profileRef = getDocumentRef(PROFILE_COLLECTION, PROFILE_DOC_ID);
+             try {
+                // Ensure we only update if the new total is actually different
+                if (latestProfileData.totalBalance !== newTotal) {
+                     await setDoc(profileRef, { totalBalance: newTotal }, { merge: true });
+                }
+             } catch (e) {
+                console.error("Failed to update total balance:", e);
+             }
+        };
+
+        const renderProfile = (data) => {
+            document.getElementById('user-name-display').textContent = data.name || 'User';
+            document.getElementById('total-balance-display').textContent = formatCurrency(data.totalBalance);
+
+            // Credit Score Update
+            document.getElementById('credit-score-display').textContent = data.creditScore;
+            document.getElementById('credit-score-date').textContent = new Date(data.creditScoreDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Calculate Credit Score Arc Offset (Range 300-850 = 550 points)
+            const scoreRange = 550;
+            const scoreProgress = Math.max(0, data.creditScore - 300);
+            const percentage = scoreProgress / scoreRange; // 0 to 1
+            const circumference = 283; // Circumference of the circle (2 * PI * 45)
+            const offset = circumference * (1 - percentage);
+            document.getElementById('credit-score-arc').style.strokeDashoffset = offset.toFixed(2);
+        };
+
+        const renderAccounts = (accounts) => {
+            const container = document.getElementById('accounts-container');
+            container.innerHTML = accounts.map(account => {
+                let innerHTML = '';
+                if (account.type === 'credit') {
+                    // Credit Card Template
+                    const percentUsed = (account.balance / account.limit) * 100;
+                    const creditUsedText = Math.min(100, percentUsed).toFixed(0) + '%';
+                    
+                    innerHTML = `
+                        <div class="bg-white rounded-xl p-6 shadow-xl glow-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">${account.name}</p>
+                                    <h4 class="text-xl font-semibold mt-1 text-gray-900">•••• ${account.number}</h4>
+                                    <p class="text-gray-500 text-sm mt-1">Current balance</p>
+                                    <p class="text-lg font-medium mt-1 text-red-600">${formatCurrency(account.balance)}</p>
+                                </div>
+                                <i data-feather="${account.icon}" class="text-red-500"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>Credit used</span>
+                                    <span>${creditUsedText}</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                                    <div class="bg-red-500 h-2.5 rounded-full progress-bar" style="width: ${creditUsedText}"></div>
+                                </div>
+                            </div>
+                            <button onclick="showNotification('Initiating payment for ${account.name} balance...')" class="mt-4 w-full bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 rounded-xl text-base font-medium transition-colors">
+                                ${account.buttonText}
+                            </button>
+                        </div>
+                    `;
+                } else if (account.type === 'standard') {
+                    // Checking/Savings Template
+                    const isSavings = account.id === 'savings';
+                    const balanceType = isSavings ? 'Current balance' : 'Available balance';
+                    const apyBadge = isSavings ? `<span class="bg-blue-500/10 text-blue-600 text-xs font-medium px-2.5 py-0.5 rounded-full">${account.apy}</span>` : '';
+                    
+                    innerHTML = `
+                        <div class="bg-white rounded-xl p-6 shadow-xl glow-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">${account.name}</p>
+                                    <h4 class="text-xl font-semibold mt-1 text-gray-900">•••• ${account.number}</h4>
+                                    <p class="text-gray-500 text-sm mt-1">${balanceType}</p>
+                                    <p class="text-lg font-medium mt-1 text-blue-600">${formatCurrency(account.balance)}</p>
+                                </div>
+                                ${apyBadge || `<i data-feather="${account.icon}" class="text-blue-500"></i>`}
+                            </div>
+                            ${isSavings ? `
+                                <div class="mt-6 grid grid-cols-2 gap-3">
+                                    <button onclick="showNotification('Processing deposit to ${account.name}...')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-3 rounded-xl text-sm font-medium transition-colors">
+                                        ${account.buttonText[0]}
+                                    </button>
+                                    <button onclick="showNotification('Processing withdrawal from ${account.name}...')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-3 rounded-xl text-sm font-medium transition-colors">
+                                        ${account.buttonText[1]}
+                                    </button>
+                                </div>
+                            ` : `
+                                <button onclick="showNotification('Viewing recent transactions for ${account.name}...')" class="mt-6 w-full bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 rounded-xl text-base font-medium transition-colors">
+                                    ${account.buttonText}
+                                </button>
+                            `}
+                        </div>
+                    `;
+                } else if (account.type === 'investment') {
+                    // Investment Template
+                    const isPositive = account.todayChange >= 0;
+                    const changeColor = isPositive ? 'text-green-600' : 'text-red-600';
+                    const sign = isPositive ? '+' : '';
+                    innerHTML = `
+                         <div class="bg-white rounded-xl p-6 shadow-xl glow-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">${account.name}</p>
+                                    <h4 class="text-xl font-semibold mt-1 text-gray-900">•••• ${account.number}</h4>
+                                    <p class="text-gray-500 text-sm mt-1">Portfolio value</p>
+                                    <p class="text-lg font-medium mt-1 text-blue-600">${formatCurrency(account.balance)}</p>
+                                </div>
+                                <i data-feather="${account.icon}" class="text-blue-500"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="${changeColor} font-semibold">${sign}${formatCurrency(account.todayChange).replace('$', '')}</span>
+                                    <span class="text-gray-500">Today</span>
+                                </div>
+                            </div>
+                            <button onclick="showNotification('Opening investment portfolio management for ${account.name}...')" class="mt-6 w-full bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 rounded-xl text-base font-medium transition-colors">
+                                ${account.buttonText}
+                            </button>
+                        </div>
+                    `;
+                }
+                return innerHTML;
+            }).join('');
+
+            // Important: Re-initialize Feather Icons after dynamic content is added
+            feather.replace();
+        };
+
+        const renderTransactions = (transactions) => {
+            const container = document.getElementById('transactions-container');
+            if (transactions.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-4">No recent transactions.</p>';
+                return;
+            }
+
+            container.innerHTML = transactions.slice(0, 4).map((tx, index) => {
+                const isExpense = tx.amount < 0;
+                const amountClass = isExpense ? 'text-red-600' : 'text-green-600';
+                const iconColor = isExpense ? 'text-red-500' : 'text-green-500';
+                const borderClass = index < 3 ? 'pb-4 border-b border-gray-200' : '';
+
+                return `
+                    <div class="flex justify-between items-center ${borderClass}">
+                        <div class="flex items-center">
+                            <div class="bg-gray-100 p-3 rounded-lg">
+                                <i data-feather="${tx.icon || 'circle'}" class="${iconColor}"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="font-medium text-gray-900">${tx.merchant}</p>
+                                <p class="text-gray-500 text-sm">${tx.date} • ${tx.category}</p>
+                            </div>
+                        </div>
+                        <p class="${amountClass} font-semibold">${formatCurrency(tx.amount)}</p>
+                    </div>
+                `;
+            }).join('');
+
+            // Important: Re-initialize Feather Icons after dynamic content is added
+            feather.replace();
+        };
+        
+        // --- GEMINI API INTEGRATION ---
+        const GEMINI_MODEL = 'gemini-2.5-flash-preview-05-20';
+        const API_KEY = ""; // Placeholder for Canvas environment
+
+        // Utility for exponential backoff (retry logic)
+        const exponentialBackoffFetch = async (url, options, retries = 3) => {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        // Throw error if response status is not OK
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === retries - 1) {
+                        throw error; // Throw on final retry attempt
+                    }
+                    // Wait for an exponentially increasing time
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        };
+
+        const generateInsight = async () => {
+            const btn = document.getElementById('generate-insight-btn');
+            const btnText = document.getElementById('insight-btn-text');
+            const loadingSpinner = document.getElementById('insight-loading');
+            const resultContainer = document.getElementById('insight-result-container');
+            const resultDisplay = document.getElementById('insight-result');
+            const contextInput = document.getElementById('insight-context-input').value.trim();
+
+            // Simple validation check
+            if (userId === 'loading' || !db) {
+                showNotification('System is initializing. Please wait a moment.');
+                return;
+            }
+
+            // UI: Start Loading State
+            btn.disabled = true;
+            btnText.textContent = 'Analyzing...';
+            loadingSpinner.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            resultDisplay.textContent = '';
+            showNotification('Connecting to financial AI model...');
+
+
+            try {
+                // 1. Prepare data and prompt
+                const transactionSummary = latestTransactions.slice(0, 5).map(tx => 
+                    // Format output for the LLM
+                    `${tx.date} - ${tx.merchant} (${tx.category}): ${formatCurrency(tx.amount)}`
+                ).join('\n');
+
+                const systemPrompt = `You are a concise, helpful Personal Financial Advisor named Neo. Analyze the provided financial data (Profile and Recent Transactions). Provide a single, actionable, and encouraging financial insight or personalized tip in one paragraph. Focus on the data provided. Do not use markdown headers or bullet points.`;
+
+                const userQuery = `
+                    Hello, Neo. Here is my current financial data:
+                    - Total Balance: ${formatCurrency(latestProfileData.totalBalance || 0)}
+                    - Credit Score: ${latestProfileData.creditScore || 'N/A'}
+                    - Name: ${latestProfileData.name || 'User'}
+
+                    My 5 most recent transactions are:
+                    ---
+                    ${transactionSummary.length > 0 ? transactionSummary : 'No recent transactions to analyze.'}
+                    ---
+                    ${contextInput ? `User specific question/context: ${contextInput}` : ''}
+                    What is one actionable financial insight or advice based on this data?
+                `;
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${API_KEY}`;
+                
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                const options = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                };
+
+                // 2. Call the API
+                const response = await exponentialBackoffFetch(apiUrl, options);
+                const result = await response.json();
+
+                let generatedText = 'Could not generate insight.';
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    generatedText = candidate.content.parts[0].text;
+                } else if (result.error) {
+                    generatedText = `API Error: ${result.error.message}`;
+                    console.error('Gemini API Error:', result.error);
+                }
+
+                // 3. UI: Display result
+                resultDisplay.textContent = generatedText;
+                resultContainer.classList.remove('hidden');
+                showNotification('Insight generated successfully!');
+
+            } catch (error) {
+                console.error("Error generating financial insight:", error);
+                showNotification('Analysis failed: Network or API issue.');
+                resultDisplay.textContent = 'An unexpected error occurred during analysis. Please try again.';
+                resultContainer.classList.remove('hidden');
+            } finally {
+                // 4. UI: Reset Loading State
+                btn.disabled = false;
+                btnText.textContent = 'Generate Insight ✨';
+                loadingSpinner.classList.add('hidden');
+            }
+        };
+
+
+        // --- UI Interactions ---
+
+        document.getElementById('mobile-menu-open').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const isOpen = menu.classList.toggle('hidden-mobile');
+            const icon = document.querySelector('#mobile-menu-open i');
+            
+            if (isOpen) {
+                icon.setAttribute('data-feather', 'menu');
+            } else {
+                icon.setAttribute('data-feather', 'x');
+            }
+            // Re-initialize Feather Icons after dynamic content is added
+            feather.replace();
+        });
+
+
+        // Start the application
+        initFirebase();
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             const insightBtn = document.getElementById('generate-insight-btn');
+             if (insightBtn) {
+                 insightBtn.addEventListener('click', generateInsight);
+             }
+             // Initial Feather icon replacement for static elements
+             feather.replace();
+        });
+        
+        // Expose the notification function globally so it can be called from onclick attributes
+        window.showNotification = showNotification; 
+    </script>
+</body>
+</html>
